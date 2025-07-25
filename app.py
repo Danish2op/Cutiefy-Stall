@@ -134,7 +134,7 @@ st.markdown("""
 
 def initialize_firebase():
     if not firebase_admin._apps:
-        cred = credentials.Certificate("C:/Users/danis/OneDrive/Desktop/cutiefystall/firebase-key.json")
+        cred = credentials.Certificate(dict(st.secrets["firebase"]))
         firebase_admin.initialize_app(cred)
     return firestore.client()
 
