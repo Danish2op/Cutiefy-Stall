@@ -131,20 +131,12 @@ st.markdown("""
 
 # 🔧 FIREBASE CONFIGURATION - DIRECT CONNECTION
 @st.cache_resource
+
 def initialize_firebase():
-    """Initialize Firebase with your config"""
     if not firebase_admin._apps:
-        try:
-            import os
-            
-            # Look for firebase key file in current directory
-            key_file = "firebase-key.json"
-            
-            # Check if file exists
-            if os.path.exists(key_file):
-                # Use the service account key file (Windows path safe)
-                cred = credentials.Certificate(key_file)
-                firebase_admin.
+        cred = credentials.Certificate("C:/Users/danis/OneDrive/Desktop/cutiefystall/firebase-key.json")
+        firebase_admin.initialize_app(cred)
+    return firestore.client()
 
 # 📧 EMAIL CONFIGURATION - SECURE FOR STREAMLIT CLOUD
 def get_email_config():
