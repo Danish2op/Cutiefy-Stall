@@ -431,26 +431,40 @@ class StallManager:
             <!DOCTYPE html>
             <html>
             <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta charset='utf-8'>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
                 <title>Receipt - {BUSINESS_INFO['brand']}</title>
                 <style>
-                    body {{ font-family: 'Arial', sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }}
-                    .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
-                    .header {{ background: linear-gradient(135deg, #ECD0D4, #F5E6E8); padding: 30px; text-align: center; }}
-                    .logo {{ max-width: 150px; height: auto; border-radius: 8px; }}
-                    .brand-name {{ font-size: 2.5rem; color: #B85450; margin: 15px 0 5px 0; font-weight: bold; }}
-                    .content {{ padding: 30px; }}
-                    .receipt-title {{ font-size: 1.8rem; color: #B85450; margin-bottom: 20px; text-align: center; }}
-                    .customer-info {{ background: #F5E6E8; padding: 20px; border-radius: 8px; margin-bottom: 25px; }}
-                    .items-table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-                    .items-table th, .items-table td {{ padding: 12px; text-align: left; border-bottom: 1px solid #ECD0D4; }}
+                    body {{ font-family: 'Poppins', Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }}
+                    .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(184,84,80,0.10); animation: fadeIn 1.2s; }}
+                    .header {{ background: linear-gradient(135deg, #ECD0D4, #F5E6E8); padding: 36px 30px 24px 30px; text-align: center; animation: slideDown 1.2s; }}
+                    .logo {{ max-width: 120px; height: auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(184,84,80,0.10); animation: bounceIn 1.2s; }}
+                    .brand-name {{ font-size: 2.7rem; color: #B85450; margin: 18px 0 5px 0; font-weight: bold; font-family: 'Dancing Script', cursive; letter-spacing: 1px; }}
+                    .content {{ padding: 36px 30px 30px 30px; animation: fadeIn 1.5s; }}
+                    .receipt-title {{ font-size: 2rem; color: #B85450; margin-bottom: 22px; text-align: center; font-family: 'Dancing Script', cursive; letter-spacing: 1px; }}
+                    .customer-info {{ background: #F5E6E8; padding: 22px; border-radius: 10px; margin-bottom: 28px; box-shadow: 0 2px 8px rgba(236,208,212,0.10); animation: fadeIn 2s; }}
+                    .items-table {{ width: 100%; border-collapse: collapse; margin: 24px 0; }}
+                    .items-table th, .items-table td {{ padding: 13px; text-align: left; border-bottom: 1px solid #ECD0D4; }}
                     .items-table th {{ background: #ECD0D4; color: #B85450; font-weight: bold; }}
-                    .total-section {{ background: #F5E6E8; padding: 20px; border-radius: 8px; margin-top: 25px; }}
-                    .total-row {{ display: flex; justify-content: space-between; margin: 8px 0; }}
-                    .final-total {{ font-size: 1.3rem; font-weight: bold; color: #B85450; border-top: 2px solid #ECD0D4; padding-top: 15px; margin-top: 15px; }}
-                    .footer {{ background: #ECD0D4; padding: 20px; text-align: center; color: #B85450; }}
-                    .thank-you {{ font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; }}
+                    .total-section {{ background: #F5E6E8; padding: 22px; border-radius: 10px; margin-top: 28px; box-shadow: 0 2px 8px rgba(236,208,212,0.10); animation: fadeIn 2.2s; }}
+                    .total-row {{ display: flex; justify-content: space-between; margin: 10px 0; font-size: 1.08rem; }}
+                    .final-total {{ font-size: 1.4rem; font-weight: bold; color: #B85450; border-top: 2px solid #ECD0D4; padding-top: 18px; margin-top: 18px; letter-spacing: 1px; }}
+                    .footer {{ background: #ECD0D4; padding: 24px; text-align: center; color: #B85450; animation: fadeIn 2.5s; }}
+                    .thank-you {{ font-size: 1.3rem; font-weight: bold; margin-bottom: 12px; font-family: 'Dancing Script', cursive; animation: popIn 2.2s; }}
+                    .qr-section {{ text-align:center; margin-top:36px; animation: fadeIn 2.2s; }}
+                    .qr-section img {{ max-width:180px; margin: 0 auto 10px auto; display:block; border-radius: 16px; box-shadow: 0 4px 16px rgba(184,84,80,0.10); animation: bounceIn 1.5s; }}
+                    .pay-instructions {{ color:#B85450; font-weight:bold; margin: 8px 0 0 0; font-size: 1.08rem; }}
+                    .upi-id {{ color:#B85450; font-size: 1.1rem; font-weight: bold; margin-bottom: 0; }}
+                    @keyframes fadeIn {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
+                    @keyframes slideDown {{ from {{ transform: translateY(-40px); opacity: 0; }} to {{ transform: translateY(0); opacity: 1; }} }}
+                    @keyframes bounceIn {{ 0% {{ transform: scale(0.7); opacity: 0; }} 60% {{ transform: scale(1.1); opacity: 1; }} 100% {{ transform: scale(1); }} }}
+                    @keyframes popIn {{ 0% {{ transform: scale(0.7); opacity: 0; }} 80% {{ transform: scale(1.1); opacity: 1; }} 100% {{ transform: scale(1); }} }}
+                    /* Responsive */
+                    @media (max-width: 650px) {{
+                        .container, .content, .header, .footer {{ padding: 10px !important; }}
+                        .brand-name {{ font-size: 2rem; }}
+                        .receipt-title {{ font-size: 1.3rem; }}
+                    }}
                 </style>
             </head>
             <body>
@@ -459,10 +473,8 @@ class StallManager:
                         <img src="{BUSINESS_INFO['logo_url']}" alt="Logo" class="logo">
                         <div class="brand-name">{BUSINESS_INFO['brand']}</div>
                     </div>
-                    
                     <div class="content">
                         <h2 class="receipt-title">🧾 Purchase Receipt</h2>
-                        
                         <div class="customer-info">
                             <h3 style="margin-top: 0; color: #B85450;">Customer Details</h3>
                             <p><strong>Name:</strong> {customer_name}</p>
@@ -470,7 +482,6 @@ class StallManager:
                             <p><strong>Receipt ID:</strong> {sale_id}</p>
                             <p><strong>Date:</strong> {datetime.now().strftime("%B %d, %Y at %I:%M %p")}</p>
                         </div>
-                        
                         <h3 style="color: #B85450;">Items Purchased</h3>
                         <table class="items-table">
                             <thead>
@@ -483,7 +494,6 @@ class StallManager:
                             </thead>
                             <tbody>
             """
-            
             # Add cart items to email
             for item in cart_items:
                 html_template += f"""
@@ -494,11 +504,9 @@ class StallManager:
                                     <td>₹{item['total']:.2f}</td>
                                 </tr>
                 """
-            
             html_template += f"""
                             </tbody>
                         </table>
-                        
                         <div class="total-section">
                             <div class="total-row">
                                 <span>Subtotal:</span>
@@ -517,14 +525,13 @@ class StallManager:
                                 <span>₹{total_paid:.2f}</span>
                             </div>
                         </div>
-                        <div style="text-align:center; margin-top:30px;">
+                        <div class="qr-section">
                             <h3 style="color:#B85450;">Pay via UPI</h3>
                             {qr_img_html}
-                            <p style="color:#B85450; font-weight:bold;">UPI ID: {upi_id}</p>
-                            <p style="color:#B85450;">Please scan the QR code above or pay to the UPI ID. After payment, reply to this email with a screenshot of your payment showing the <b>UPIRF number</b> for confirmation.</p>
+                            <div class="upi-id">UPI ID: {upi_id}</div>
+                            <div class="pay-instructions">Please scan the QR code above or pay to the UPI ID. After payment, reply to this email with a screenshot of your payment showing the <b>UPIRF number</b> for confirmation.</div>
                         </div>
                     </div>
-                    
                     <div class="footer">
                         <div class="thank-you">Thank you for shopping with us! 💖</div>
                         <p>{BUSINESS_INFO['contact']}</p>
