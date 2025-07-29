@@ -165,8 +165,8 @@ BUSINESS_INFO = {
     "name": "Cutiefy",
     "brand": "Cutiefy",
     "logo_url": "https://i.ibb.co/h1ZWHFbP/Untitled-design-1.png",
-    "contact": "Contact: +91-XXXXXXXXXX",
-    "address": "Your Stall Address Here"
+    "contact": "Contact: +91-97178 87616",
+    "address": "Delhi, India"
 }
 
 class StallManager:
