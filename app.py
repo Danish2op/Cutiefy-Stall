@@ -417,19 +417,14 @@ class StallManager:
     def send_email_receipt(self, customer_email: str, customer_name: str, 
                           cart_items: List, subtotal: float, discount: float, 
                           total_paid: float, sale_id: str, delivery_charges: float = 0.0) -> bool:
-        """Send beautiful HTML email receipt with QR code for payment and delivery charges"""
+        """Send beautiful HTML email receipt with static QR code for payment and delivery charges"""
         try:
             st.info(f"📧 Sending email to {customer_email}...")
 
-            # Generate QR code for UPI payment
-            upi_id = "cutiefy@upi"
-            upi_amount = total_paid
-            upi_url = f"upi://pay?pa={upi_id}&pn=Cutiefy&am={upi_amount:.2f}&cu=INR"
-            qr = qrcode.make(upi_url)
-            buffered = io.BytesIO()
-            qr.save(buffered, format="PNG")
-            qr_base64 = base64.b64encode(buffered.getvalue()).decode()
-            qr_img_html = f'<img src="data:image/png;base64,{qr_base64}" alt="UPI QR Code" style="max-width:180px; margin: 20px auto; display:block;" />'
+            # Use static QR code image and provided UPI ID
+            upi_id = "sakshi.sharma28011@okhdfcbank"
+            qr_img_url = "https://i.ibb.co/jkx87sVM/qr.jpg"
+            qr_img_html = f'<img src="{qr_img_url}" alt="UPI QR Code" style="max-width:180px; margin: 20px auto; display:block;" />'
 
             # Create HTML email template
             html_template = f"""
