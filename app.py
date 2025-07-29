@@ -11,6 +11,8 @@ import io
 import base64
 from typing import Dict, List, Any
 import uuid
+import qrcode
+from PIL import Image
 
 # 🎨 PAGE CONFIG & STYLING
 st.set_page_config(
@@ -414,11 +416,21 @@ class StallManager:
     
     def send_email_receipt(self, customer_email: str, customer_name: str, 
                           cart_items: List, subtotal: float, discount: float, 
-                          total_paid: float, sale_id: str) -> bool:
-        """Send beautiful HTML email receipt"""
+                          total_paid: float, sale_id: str, delivery_charges: float = 0.0) -> bool:
+        """Send beautiful HTML email receipt with QR code for payment and delivery charges"""
         try:
             st.info(f"📧 Sending email to {customer_email}...")
-            
+
+            # Generate QR code for UPI payment
+            upi_id = "cutiefy@upi"
+            upi_amount = total_paid
+            upi_url = f"upi://pay?pa={upi_id}&pn=Cutiefy&am={upi_amount:.2f}&cu=INR"
+            qr = qrcode.make(upi_url)
+            buffered = io.BytesIO()
+            qr.save(buffered, format="PNG")
+            qr_base64 = base64.b64encode(buffered.getvalue()).decode()
+            qr_img_html = f'<img src="data:image/png;base64,{qr_base64}" alt="UPI QR Code" style="max-width:180px; margin: 20px auto; display:block;" />'
+
             # Create HTML email template
             html_template = f"""
             <!DOCTYPE html>
@@ -501,10 +513,20 @@ class StallManager:
                                 <span>Discount:</span>
                                 <span>-₹{discount:.2f}</span>
                             </div>
+                            <div class="total-row">
+                                <span>Delivery Charges:</span>
+                                <span>₹{delivery_charges:.2f}</span>
+                            </div>
                             <div class="total-row final-total">
                                 <span>Total Paid:</span>
                                 <span>₹{total_paid:.2f}</span>
                             </div>
+                        </div>
+                        <div style="text-align:center; margin-top:30px;">
+                            <h3 style="color:#B85450;">Pay via UPI</h3>
+                            {qr_img_html}
+                            <p style="color:#B85450; font-weight:bold;">UPI ID: {upi_id}</p>
+                            <p style="color:#B85450;">Please scan the QR code above or pay to the UPI ID. After payment, reply to this email with a screenshot of your payment showing the <b>UPIRF number</b> for confirmation.</p>
                         </div>
                     </div>
                     
@@ -946,14 +968,13 @@ def main():
                 discount_type = st.selectbox("Discount Type", ["None", "Percentage", "Flat Amount"])
             with col2:
                 discount_value = st.number_input("Discount Value", min_value=0.0, step=0.01) if discount_type != "None" else 0
-            
+            with col3:
+                delivery_charges = st.number_input("Delivery Charges", min_value=0.0, step=0.01, value=0.0)
             # Calculate totals
             discount_amount = 0
             if discount_type != "None":
                 discount_amount = manager.apply_discount(subtotal, discount_type, discount_value)
-            
-            final_total = subtotal - discount_amount
-            
+            final_total = subtotal - discount_amount + delivery_charges
             # Display totals
             col1, col2 = st.columns(2)
             with col2:
@@ -967,13 +988,16 @@ def main():
                         <span>Discount:</span>
                         <span>-₹{discount_amount:.2f}</span>
                     </div>
+                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span>Delivery Charges:</span>
+                        <span>₹{delivery_charges:.2f}</span>
+                    </div>
                     <div style="display: flex; justify-content: space-between; margin: 15px 0 5px 0; font-size: 1.2rem; font-weight: bold; border-top: 2px solid #B85450; padding-top: 10px;">
                         <span>Total:</span>
                         <span>₹{final_total:.2f}</span>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-            
             # Checkout button
             if st.button("🎯 Generate Bill & Send Receipt", disabled=not st.session_state.current_customer):
                 if st.session_state.current_customer:
@@ -987,9 +1011,8 @@ def main():
                             discount_amount,
                             final_total
                         )
-                        
                         if sale_id:
-                            # Send email receipt
+                            # Send email receipt with delivery charges and QR code
                             email_sent = manager.send_email_receipt(
                                 st.session_state.current_customer['email'],
                                 st.session_state.current_customer['name'],
@@ -997,15 +1020,14 @@ def main():
                                 subtotal,
                                 discount_amount,
                                 final_total,
-                                sale_id
+                                sale_id,
+                                delivery_charges
                             )
-                            
                             if email_sent:
                                 st.success(f"✅ Bill generated successfully! Receipt sent to {st.session_state.current_customer['email']}")
                                 st.success(f"🆔 Sale ID: {sale_id}")
                             else:
                                 st.warning(f"✅ Bill saved (ID: {sale_id}) but email failed to send. Please check email configuration.")
-                            
                             # Clear cart and customer info
                             st.session_state.cart = []
                             st.session_state.current_customer = {}
